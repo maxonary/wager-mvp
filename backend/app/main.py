@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from app.api.endpoints import bets, leaderboard
 from app.database import engine
 import app.models as models
 
