@@ -1,5 +1,20 @@
+import requests
+import os
 from sqlalchemy.orm import Session
 from . import models, schemas
+
+API_URL = "https://api.clashroyale.com/v1"
+API_KEY = os.getenv("API_KEY")
+
+def get_battle_log(player_tag: str):
+    headers = {
+        'Authorization ': f'Bearer {API_KEY}'
+    }
+    response = requests.get(f'{API_URL}/players/{player_tag}/battlelog', headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return None
 
 def get_player_by_tag(db: Session, tag: str):
     return db.query(models.Player).filter(models.Player.tag == tag).first()
