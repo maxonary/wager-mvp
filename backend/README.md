@@ -7,7 +7,7 @@ Built on FastAPI
 3. Install the dependencies ```pip install -r requirements.txt```
 
 ## Running the server
-1. Run the server ```uvicorn backend.app.main:app --reload```
+1. Run the server ```uvicorn app.main:app --reload```
 2. Copy the URL from the terminal and paste it in your browser
 
 ## API Documentation
