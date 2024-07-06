@@ -5,6 +5,7 @@ Built on FastAPI
 1. Create a virtual environment ```python3 -m venv venv```
 2. Activate the virtual environment ```source venv/bin/activate```
 3. Install the dependencies ```pip install -r requirements.txt```
+4. Copy the .env.example file to .env ```cp .env.example .env``` and fill in the required fields
 
 ## Running the server
 1. Run the server ```uvicorn app.main:app --reload```
