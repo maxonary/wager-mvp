@@ -44,3 +44,20 @@ def update_player_points(db: Session, player: schemas.Player, points: int):
 
 def get_leaderboard(db: Session, limit: int = 10):
     return db.query(models.Player).order_by(models.Player.points.desc()).limit(limit).all()
+
+def resolve_bet(bet_id: int, winner_tag: str, db: Session):
+    bet = db.query(models.Bet).filter(models.Bet.id == bet_id).first()
+    if not bet:
+        return None
+    bet.winner_tag = winner_tag
+    if winner_tag == bet.player1_tag:
+        winner = bet.player1_tag
+        loser = bet.player2_tag
+    else:
+        winner = bet.player2_tag
+        loser = bet.player1_tag
+    update_player_points(db, schemas.Player(tag=winner), bet.bet_amount)
+    update_player_points(db, schemas.Player(tag=loser), -bet.bet_amount)
+    db.commit()
+    db.refresh(bet)
+    return bet
