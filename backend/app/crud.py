@@ -1,5 +1,6 @@
 import requests
 import os
+import time
 from sqlalchemy.orm import Session
 from . import models, schemas
 
@@ -61,3 +62,35 @@ def resolve_bet(bet_id: int, winner_tag: str, db: Session):
     db.commit()
     db.refresh(bet)
     return bet
+
+def check_for_completed_game(bet_id: int, db: Session):
+    bet = db.query(models.Bet).filter(models.Bet.id == bet_id).first()
+    if not bet:
+        return None
+    
+    while True:
+        battle_log1 = get_battle_log(bet.player1_tag)
+        battle_log2 = get_battle_log(bet.player2_tag)
+        if not battle_log1 or not battle_log2:
+            continue
+
+        # Check if there is a game between the two players
+        for battle1 in battle_log1:
+            for battle2 in battle_log2:
+                if (battle1['battleTime'] == battle2['battleTime'] and
+                    bet.player1_tag in [player['tag'] for player in battle1['team']] and
+                    bet.player2_tag in [player['tag'] for player in battle2['team']]):
+                    
+                    # Determine the winner
+                    crowns1 = next(player['crowns'] for player in battle1['team'] if player['tag'] == bet.player1_tag)
+                    crowns2 = next(player['crowns'] for player in battle2['team'] if player['tag'] == bet.player2_tag)
+                    
+                    if crowns1 > crowns2:
+                        winner_tag = bet.player1_tag
+                    else:
+                        winner_tag = bet.player2_tag
+                    
+                    resolve_bet(bet_id, winner_tag, db)
+                    return
+
+        time.sleep(60)  # Wait for 1 minute before checking again

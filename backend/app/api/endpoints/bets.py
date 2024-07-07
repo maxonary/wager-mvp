@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from app import crud, models, schemas
 from app.database import SessionLocal
@@ -13,29 +13,27 @@ def get_db():
         db.close()
 
 @router.post("/bets/", response_model=schemas.Bet)
-def create_bet(bet: schemas.BetCreate, db: Session = Depends(get_db)):
+def create_bet(bet: schemas.BetCreate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     db_player1 = crud.get_player_by_tag(db, bet.player1_tag)
     db_player2 = crud.get_player_by_tag(db, bet.player2_tag)
     if not db_player1:
         db_player1 = crud.create_player(db, schemas.PlayerCreate(tag=bet.player1_tag))
     if not db_player2:
         db_player2 = crud.create_player(db, schemas.PlayerCreate(tag=bet.player2_tag))
-    return crud.create_bet(db, bet)
+    bet = crud.create_bet(db, bet)
+    background_tasks.add_task(crud.check_for_completed_game, bet.id, db)
+    return bet
 
 @router.post("/bets/resolve/{bet_id}", response_model=schemas.Bet)
 def resolve_bet(bet_id: int, winner_tag: str, db: Session = Depends(get_db)):
-    bet = db.query(models.Bet).filter(models.Bet.id == bet_id).first()
+    bet = crud.resolve_bet(bet_id, winner_tag, db)
     if not bet:
         raise HTTPException(status_code=404, detail="Bet not found")
-    bet.winner_tag = winner_tag
-    if winner_tag == bet.player1_tag:
-        winner = bet.player1_tag
-        loser = bet.player2_tag
-    else:
-        winner = bet.player2_tag
-        loser = bet.player1_tag
-    crud.update_player_points(db, schemas.Player(tag=winner), bet.bet_amount)
-    crud.update_player_points(db, schemas.Player(tag=loser), -bet.bet_amount)
-    db.commit()
-    db.refresh(bet)
     return bet
+
+@router.get("/battlelog/{player_tag}", response_model=dict)
+def get_battle_log(player_tag: str):
+    battle_log = crud.get_battle_log(player_tag)
+    if not battle_log:
+        raise HTTPException(status_code=404, detail="Battle log not found")
+    return battle_log
