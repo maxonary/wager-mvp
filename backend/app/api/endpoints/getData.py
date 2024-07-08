@@ -1,23 +1,21 @@
+from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, HTTPException
-import requests
-import urllib.parse
-from app.config import load_env
+import time
+from app.services.battlelog import fetch_battle_logs, determine_winner
 
 router = APIRouter()
 
-API_URL = "https://api.clashroyale.com/v1/players/{}/battlelog"
-config = load_env()
-API_KEY = config['API_KEY']
+@router.post("/battlelog/")
+def get_battle_log(username: str, opponent: str):
+    start_time = datetime.now(timezone.utc)
+    end_time = start_time + timedelta(minutes=7)
 
-@router.get("/battlelog/{player_tag}")
-def get_battle_log(player_tag: str):
-    player_tag_encoded = urllib.parse.quote(player_tag)  # URL-encode the player_tag
-    url = API_URL.format(player_tag_encoded)
-    headers = {
-        'Authorization': f'Bearer {API_KEY}'
-    }
-    response = requests.get(url, headers=headers)
-    if response.status_code == 200:
-        return response.json()
-    else:
-        raise HTTPException(status_code=response.status_code, detail="Error fetching battle log")
+    while datetime.now(timezone.utc) < end_time:
+        username_battlelog = fetch_battle_logs(username)
+        if username_battlelog:
+            winner = determine_winner(username, opponent, username_battlelog, datetime.now(timezone.utc))
+            if winner:
+                return winner
+        time.sleep(10)  # Sleep for 10 seconds before trying again
+
+    raise HTTPException(status_code=404, detail="No matching battles found within the time frame")
