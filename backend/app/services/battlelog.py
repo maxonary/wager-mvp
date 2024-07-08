@@ -2,17 +2,11 @@ import requests
 import urllib.parse
 from datetime import datetime, timedelta, timezone
 from fastapi import HTTPException
-from app.config import load_env  # Adjust the import according to your project structure
+from app.config import load_env 
 
-config = load_env()  # Load the environment variables
+config = load_env()
 API_KEY = config['API_KEY']
 API_URL = "https://api.clashroyale.com/v1/players/{}/battlelog"
-
-if API_KEY is None:
-    print("API_KEY is None")
-    raise RuntimeError("API_KEY environment variable not set")
-else:
-    print(f"API_KEY: {API_KEY}")  # This is for debugging, remove in production
 
 def fetch_battle_logs(username: str):
     username_encoded = urllib.parse.quote(username)
