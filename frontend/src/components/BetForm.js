@@ -1,75 +1,81 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 
-const isDebug = process.env.REACT_APP_DEBUG === 'true';
+function BetForm({ betAmount, onBetAmountChange }) {
+  const [player1Tag, setPlayer1Tag] = useState('#');
+  const [player2Tag, setPlayer2Tag] = useState('#');
+  const [error, setError] = useState('');
 
-function BetForm() {
-    const [player1, setPlayer1] = useState('');
-    const [player2, setPlayer2] = useState('');
-    const [amount, setAmount] = useState('');
-    const [betId, setBetId] = useState(null);
-    const [winner, setWinner] = useState('');
-    const [betStatus, setBetStatus] = useState('');
-    const [betError, setBetError] = useState('');
+  const handleSliderChange = (event) => {
+    onBetAmountChange(parseInt(event.target.value, 10));
+  };
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        setBetStatus('');
-        setBetError('');
-        try {
-            const response = await axios.post('/api/v1/bets/', {
-                player1_tag: player1,
-                player2_tag: player2,
-                bet_amount: parseFloat(amount),
-            });
-            if (isDebug) console.log('Bet placed:', response.data);
-            setBetId(response.data.id);
-            setBetStatus('Bet placed successfully!');
-        } catch (error) {
-            if (isDebug) console.error('Error placing bet:', error);
-            setBetError('Error placing bet. Please try again.');
-        }
-    };
+  const handleTagChange = (setter, value) => {
+    const formattedValue = value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase(); // Remove non-alphanumeric characters and convert to uppercase
+    setter(`#${formattedValue}`);
+  };
 
-    const checkBetStatus = async () => {
-        try {
-            const response = await axios.get(`/api/v1/bets/${betId}`);
-            if (response.data.winner_tag) {
-                if (isDebug) console.log('Bet status:', response.data);
-                setWinner(response.data.winner_tag);
-                setBetStatus(`Winner: ${response.data.winner_tag}`);
-            } else {
-                setBetStatus('Bet is still ongoing. Please check again later.');
-            }
-        } catch (error) {
-            if (isDebug) console.error('Error checking bet status:', error);
-            setBetError('Error checking bet status. Please try again.');
-        }
-    };
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (player1Tag.length !== 10 || player2Tag.length !== 10) {
+      setError('Your gamertag is 9 characters long');
+    } else {
+      setError('');
+      // Submit form logic here
+    }
+  };
 
-    return (
-        <div>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Player 1 Tag:</label>
-                    <input type="text" value={player1} onChange={(e) => setPlayer1(e.target.value)} required />
-                </div>
-                <div>
-                    <label>Player 2 Tag:</label>
-                    <input type="text" value={player2} onChange={(e) => setPlayer2(e.target.value)} required />
-                </div>
-                <div>
-                    <label>Bet Amount:</label>
-                    <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} required />
-                </div>
-                <button type="submit">Place Bet</button>
-            </form>
-            {betId && <button onClick={checkBetStatus}>Check Bet Status</button>}
-            {betStatus && <p>{betStatus}</p>}
-            {betError && <p style={{ color: 'red' }}>{betError}</p>}
-            {winner && <p>Winner: {winner}</p>}
+  const closeModal = () => {
+    setError('');
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <div className="input-group">
+        <div className="input-wrapper">
+          <label htmlFor="player1">Player 1 Tag:</label>
+          <input 
+            type="text" 
+            id="player1" 
+            name="player1" 
+            value={player1Tag} 
+            onChange={(e) => handleTagChange(setPlayer1Tag, e.target.value)} 
+          />
         </div>
-    );
+        <div className="input-wrapper">
+          <label htmlFor="player2">Player 2 Tag:</label>
+          <input 
+            type="text" 
+            id="player2" 
+            name="player2" 
+            value={player2Tag} 
+            onChange={(e) => handleTagChange(setPlayer2Tag, e.target.value)} 
+          />
+        </div>
+      </div>
+      <div className="slider-container">
+        <label htmlFor="betAmount">Bet Amount: <span>${betAmount}</span></label>
+        <input
+          type="range"
+          id="betAmount"
+          name="betAmount"
+          min="0"
+          max="100"
+          value={betAmount}
+          onChange={handleSliderChange}
+        />
+      </div>
+      <button type="submit">Place Bet</button>
+
+      {error && (
+        <div className="modal">
+          <div className="modal-content">
+            <p>{error}</p>
+            <button onClick={closeModal}>OK</button>
+          </div>
+        </div>
+      )}
+    </form>
+  );
 }
 
 export default BetForm;
