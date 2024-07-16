@@ -5,8 +5,14 @@ from app.services.battlelog import fetch_battle_logs, determine_winner
 
 router = APIRouter()
 
+@router.post("/battlelog/{username}")
+def get_battle_log(username: str):
+    username_battlelog = fetch_battle_logs(username)
+    if username_battlelog:
+        return username_battlelog
+
 @router.post("/battlelog/")
-def get_battle_log(username: str, opponent: str):
+def get_dual_battle_log(username: str, opponent: str):
     start_time = datetime.now(timezone.utc)
     end_time = start_time + timedelta(minutes=7)
 
