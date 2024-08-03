@@ -15,7 +15,6 @@ function App() {
       <div className="container">
         <h1>Clash Royale</h1>
         <BetForm betAmount={betAmount} onBetAmountChange={handleBetAmountChange} />
-        <Leaderboard betAmount={betAmount} />
       </div>
     </div>
   );

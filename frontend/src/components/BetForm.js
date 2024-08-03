@@ -52,18 +52,6 @@ function BetForm({ betAmount, onBetAmountChange }) {
           />
         </div>
       </div>
-      <div className="slider-container">
-        <label htmlFor="betAmount">Bet Amount: <span>${betAmount}</span></label>
-        <input
-          type="range"
-          id="betAmount"
-          name="betAmount"
-          min="0"
-          max="100"
-          value={betAmount}
-          onChange={handleSliderChange}
-        />
-      </div>
       <button type="submit">Place Bet</button>
 
       {error && (
