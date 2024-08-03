@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, HTTPException
 import time
-from app.services.battlelog import fetch_battle_logs, determine_winner
+from app.services.battlelog import fetch_battle_logs, determine_winner, find_specific_opp_battle
 
 router = APIRouter()
 
@@ -25,3 +25,14 @@ def get_dual_battle_log(username: str, opponent: str):
         time.sleep(10)  # Sleep for 10 seconds before trying again
 
     raise HTTPException(status_code=404, detail="No matching battles found within the time frame")
+
+# Get battlelog for specific opponent
+@router.get("/battlelog/{username}/{opponent}")
+def get_specific_opp_battle_log(username: str, opponent: str):
+    username_battlelog = fetch_battle_logs(username)
+    if username_battlelog:
+        battle = find_specific_opp_battle(username_battlelog, opponent)
+        if battle:
+            return battle
+
+    raise HTTPException(status_code=404, detail="No matching battles found with the specified opponent")
