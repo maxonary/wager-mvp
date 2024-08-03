@@ -24,6 +24,13 @@ def fetch_battle_logs(username: str) -> dict:
 
     return response.json()
 
+def find_specific_opp_battle(battlelog: dict, opponent: str) -> dict:
+    for battle in battlelog['items']:
+        if any(player['tag'] == opponent for player in battle['opponent']):
+            return battle
+
+    return None
+
 def find_closest_battle(battlelog: dict, opponent: str, current_time: datetime) -> dict:
     min_time_diff = timedelta(minutes=14)
     closest_match = None
