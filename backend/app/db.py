@@ -9,3 +9,6 @@ client = MongoClient(MONGO_URI)
 db = client['wagerDev']
 user_collection = db['userTable']
 match_collection = db['matchTable']
+
+def get_db_client():
+    return client
