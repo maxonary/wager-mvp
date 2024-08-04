@@ -25,11 +25,15 @@ async def get_match_result(request: MatchResultRequest):
         if not match:
             raise HTTPException(status_code=404, detail="Match not found")
 
+        # Step 2: Check if the match has already been checked
+        if match.get("checked"):
+            raise HTTPException(status_code=400, detail="This match result has already been processed.")
+
         userTag1 = match['userTag1']
         userTag2 = match['userTag2']
         betAmount = match['betAmount']
 
-        # Step 2: Determine the winner using the Clash Royale API
+        # Step 3: Determine the winner using the Clash Royale API
         winner = determine_winner(userTag1, userTag2, datetime.now(timezone.utc))
         if winner is None:
             # Update the match to indicate it was a draw
@@ -45,7 +49,7 @@ async def get_match_result(request: MatchResultRequest):
                 "betAmount": betAmount
             }
 
-        # Step 3: Update the match record in the database
+        # Step 4: Update the match record in the database
         winnerTag = winner['winner']
         match_collection.update_one(
             {"matchID": matchID},
@@ -56,23 +60,27 @@ async def get_match_result(request: MatchResultRequest):
             session=session
         )
 
-        # Step 4: Update the user balances and wins atomically
+        # Step 5: Update the user balances and wins atomically
         loserTag = userTag1 if winnerTag == userTag2 else userTag2
+        latest_battle_time_str = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ")
 
         # Update winner balance and wins
         user_collection.update_one(
             {"userTag": winnerTag},
             {
                 "$inc": {"balance": betAmount, "wins": 1},
-                "$set": {"lastProcessedBattleTime": datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ")}
+                "$set": {"lastProcessedBattleTime": latest_battle_time_str}
             },
             session=session
         )
 
-        # Update loser balance
+        # Update loser balance and lastProcessedBattleTime
         user_collection.update_one(
             {"userTag": loserTag},
-            {"$inc": {"balance": -betAmount}},
+            {
+                "$inc": {"balance": -betAmount},
+                "$set": {"lastProcessedBattleTime": latest_battle_time_str}
+            },
             session=session
         )
 

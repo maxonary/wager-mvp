@@ -18,6 +18,9 @@ async def create_match(request: CreateMatchRequest):
         # Create a MatchID
         matchID = str(uuid.uuid4())
 
+        if request.userTag1 == request.userTag2:
+            raise HTTPException(status_code=400, detail="The same userTag cannot be used for both players.")
+
         # Create a new match object
         new_match = Match(
             matchID=matchID,
@@ -29,6 +32,8 @@ async def create_match(request: CreateMatchRequest):
         
         # Insert the match into the database
         result = match_collection.insert_one(new_match.dict(by_alias=True))
+
+        print(new_match.matchID)
 
         # Return success response
         return {

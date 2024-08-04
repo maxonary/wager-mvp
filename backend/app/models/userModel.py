@@ -6,3 +6,4 @@ class User(BaseModel):
     balance: int = 10
     username: Optional[str] = None
     wins: int = 0
+    lastProcessedBattleTime: Optional[str] = None  # Initialize to None
