@@ -1,0 +1,12 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  entrypoint: '/bin/sh'
+  args:
+  - '-c'
+  - |
+    docker build -t us-west2-docker.pkg.dev/$PROJECT_ID/wager-docker-repo/frontend-image:tag1 ./frontend
+    docker build -t us-west2-docker.pkg.dev/$PROJECT_ID/wager-docker-repo/backend-image:tag1 ./backend
+  automapSubstitutions: true
+images:
+- 'us-west2-docker.pkg.dev/$PROJECT_ID/wager-docker-repo/frontend-image:tag1'
+- 'us-west2-docker.pkg.dev/$PROJECT_ID/wager-docker-repo/backend-image:tag1'
