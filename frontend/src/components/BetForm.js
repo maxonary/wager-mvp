@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import 'font-awesome/css/font-awesome.min.css'; // Import Font Awesome CSS
+import '../styles.css'; // Import the updated CSS file
 
 function BetForm({ betAmount, onBetAmountChange }) {
   const [player1Tag, setPlayer1Tag] = useState('#');
   const [player2Tag, setPlayer2Tag] = useState('#');
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSliderChange = (event) => {
     onBetAmountChange(parseInt(event.target.value, 10));
@@ -20,7 +23,12 @@ function BetForm({ betAmount, onBetAmountChange }) {
       setError('Your gamertag is 9 characters long');
     } else {
       setError('');
-      // Submit form logic here
+      setIsSubmitting(true);
+      // Simulate an asynchronous operation like an API call
+      setTimeout(() => {
+        setIsSubmitting(false);
+        // Handle form submission logic here
+      }, 420000); // Simulate a 2-second delay
     }
   };
 
@@ -52,7 +60,13 @@ function BetForm({ betAmount, onBetAmountChange }) {
           />
         </div>
       </div>
-      <button type="submit">Place Bet</button>
+      <button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? <i className="fa fa-spinner fa-spin"></i> : 'Place Bet'}
+      </button>
+
+      {isSubmitting && (
+        <p className="in-progress-text">Match Id: 1X3eR4</p>
+      )}
 
       {error && (
         <div className="modal">
