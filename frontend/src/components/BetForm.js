@@ -7,6 +7,7 @@ function BetForm({ betAmount, onBetAmountChange }) {
   const [player2Tag, setPlayer2Tag] = useState('#');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false); // Add this state
 
   const handleSliderChange = (event) => {
     onBetAmountChange(parseInt(event.target.value, 10));
@@ -24,11 +25,13 @@ function BetForm({ betAmount, onBetAmountChange }) {
     } else {
       setError('');
       setIsSubmitting(true);
+      setIsCompleted(false); // Reset completion status
+
       // Simulate an asynchronous operation like an API call
       setTimeout(() => {
         setIsSubmitting(false);
-        // Handle form submission logic here
-      }, 420000); // Simulate a 2-second delay
+        setIsCompleted(true); // Mark as completed after the operation
+      }, 2000); // Simulate a 20-second delay
     }
   };
 
@@ -61,7 +64,13 @@ function BetForm({ betAmount, onBetAmountChange }) {
         </div>
       </div>
       <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? <i className="fa fa-spinner fa-spin"></i> : 'Place Bet'}
+        {isSubmitting ? (
+          <i className="fa fa-spinner fa-spin"></i>
+        ) : isCompleted ? (
+          <i className="fa fa-check"></i> // Display check mark when completed
+        ) : (
+          'Place Bet'
+        )}
       </button>
 
       {isSubmitting && (
