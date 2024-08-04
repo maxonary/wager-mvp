@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import 'font-awesome/css/font-awesome.min.css'; // Import Font Awesome CSS
 import '../styles.css'; // Import the updated CSS file
 
@@ -31,7 +32,7 @@ function BetForm({ betAmount, onBetAmountChange }) {
       setTimeout(() => {
         setIsSubmitting(false);
         setIsCompleted(true); // Mark as completed after the operation
-      }, 2000); // Simulate a 20-second delay
+      }, 2000); // Simulate a 2-second delay
     }
   };
 
@@ -85,6 +86,11 @@ function BetForm({ betAmount, onBetAmountChange }) {
           </div>
         </div>
       )}
+
+      {/* Link to Another Page */}
+      <Link to="/anotherpage">
+        <button type="button">Leaderboard</button>
+      </Link>
     </form>
   );
 }
