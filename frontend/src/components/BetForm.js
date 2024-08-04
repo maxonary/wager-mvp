@@ -43,7 +43,7 @@ function BetForm({ betAmount, onBetAmountChange }) {
     <form onSubmit={handleSubmit}>
       <div className="input-group">
         <div className="input-wrapper">
-          <label htmlFor="player1">Player 1 Tag:</label>
+          <label htmlFor="player1">User Tag:</label>
           <input 
             type="text" 
             id="player1" 
@@ -53,7 +53,7 @@ function BetForm({ betAmount, onBetAmountChange }) {
           />
         </div>
         <div className="input-wrapper">
-          <label htmlFor="player2">Player 2 Tag:</label>
+          <label htmlFor="player2">Opponent Tag:</label>
           <input 
             type="text" 
             id="player2" 
@@ -69,7 +69,7 @@ function BetForm({ betAmount, onBetAmountChange }) {
         ) : isCompleted ? (
           <i className="fa fa-check"></i> // Display check mark when completed
         ) : (
-          'Place Bet'
+          'Start Bet'
         )}
       </button>
 

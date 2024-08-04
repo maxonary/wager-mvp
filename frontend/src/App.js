@@ -13,7 +13,7 @@ function App() {
   return (
     <div className="App">
       <div className="container">
-        <h1>Clash Royale</h1>
+        <h1>Wager</h1>
         <BetForm betAmount={betAmount} onBetAmountChange={handleBetAmountChange} />
       </div>
     </div>
