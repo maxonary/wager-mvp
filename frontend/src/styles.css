@@ -1,86 +1,38 @@
-body {
-    background-color: black;
-    color: goldenrod;
-    font-family: 'Times New Roman', Times, serif;
-  }
-  
-  .input-group {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-  }
-  
-  .input-wrapper {
-    display: flex;
-    flex-direction: column;
-    margin-right: 10px;
-  }
-  
-  label {
-    margin-bottom: 5px;
-  }
-  
-  input[type="text"] {
-    padding: 10px;
-    border: 1px solid goldenrod;
-    border-radius: 5px;
-    background-color: black;
-    color: goldenrod;
-  }
-  
-  button {
-    padding: 10px 20px;
-    background-color: goldenrod;
-    color: black;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  button:disabled {
-    background-color: #ddd;
-    cursor: not-allowed;
-  }
-  
-  button i.fa-spinner {
-    margin-left: center;
-  }
-  
-  .in-progress-text {
-    margin-top: 20px;
-    font-size: 14px;
-    color: goldenrod;
-  }
-  
-  .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .modal-content {
-    background-color: black;
+.leaderboard-container {
+    margin: 20px;
     padding: 20px;
-    border: 1px solid goldenrod;
-    border-radius: 5px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   }
   
-  .modal-content p {
-    margin-bottom: 20px;
-    color: goldenrod;
+  .leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
   }
   
-  .modal-content button {
-    padding: 10px 20px;
-    background-color: goldenrod;
+  .leaderboard-table th, .leaderboard-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .leaderboard-table th {
+    background-color: #f2f2f2;
     color: black;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+  }
+  
+  .leaderboard-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .leaderboard-table tr:hover {
+    background-color: #ddd;
+  }
+  
+  .leaderboard-table th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background-color: #4CAF50;
+    color: white;
   }
