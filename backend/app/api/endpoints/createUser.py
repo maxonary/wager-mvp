@@ -23,15 +23,12 @@ async def create_user(request: CreateUserRequest):
     if existing_user:
         return {"message": "User exists", "userID": str(existing_user['_id']), "balance": existing_user['balance']}
     
-
-    ## TODO: Uncomment the following code after testing the fetch_battle_logs function
-
-    # # Fetch battle log to validate the user exists in Clash Royale
-    # try:
-    #     user_battle_log = fetch_battle_logs(userTag)
-    #     print(user_battle_log)
-    # except HTTPException as e:
-    #     raise HTTPException(status_code=404, detail="User not found in Clash Royale")
+    # Fetch battle log to validate the user exists in Clash Royale
+    try:
+        user_battle_log = fetch_battle_logs(userTag)
+        print(user_battle_log)
+    except HTTPException as e:
+        raise HTTPException(status_code=404, detail="User not found in Clash Royale")
 
     # If user exists, create a new user in the database
     new_user = User(userTag=userTag)
