@@ -6,7 +6,58 @@ steps:
   - |
     docker build -t us-west2-docker.pkg.dev/$PROJECT_ID/wager-docker-repo/frontend-image:tag1 ./frontend
     docker build -t us-west2-docker.pkg.dev/$PROJECT_ID/wager-docker-repo/backend-image:tag1 ./backend
-  automapSubstitutions: true
+
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'gcloud'
+  args:
+  - 'run'
+  - 'deploy'
+  - 'frontend-service'
+  - '--image'
+  - 'us-west2-docker.pkg.dev/$PROJECT_ID/wager-docker-repo/frontend-image:tag1'
+  - '--region'
+  - 'us-west2'
+  - '--platform'
+  - 'managed'
+  - '--allow-unauthenticated'
+
+
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'gcloud'
+  args:
+  - 'run'
+  - 'deploy'
+  - 'backend-service'
+  - '--image'
+  - 'us-west2-docker.pkg.dev/$PROJECT_ID/wager-docker-repo/backend-image:tag1'
+  - '--region'
+  - 'us-west2'
+  - '--platform'
+  - 'managed'
+  - '--allow-unauthenticated'
+
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'gcloud'
+  args:
+  - 'run'
+  - 'services'
+  - 'add-iam-policy-binding'
+  - 'frontend-service'
+  - '--region=us-west2'
+  - '--member=allUsers'
+  - '--role=roles/run.invoker'
+
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'gcloud'
+  args:
+  - 'run'
+  - 'services'
+  - 'add-iam-policy-binding'
+  - 'backend-service'
+  - '--region=us-west2'
+  - '--member=allUsers'
+  - '--role=roles/run.invoker'
+
 images:
 - 'us-west2-docker.pkg.dev/$PROJECT_ID/wager-docker-repo/frontend-image:tag1'
 - 'us-west2-docker.pkg.dev/$PROJECT_ID/wager-docker-repo/backend-image:tag1'
