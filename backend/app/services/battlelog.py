@@ -1,8 +1,10 @@
 import requests
 import urllib.parse
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from fastapi import HTTPException
-from app.config import load_env 
+from app.db import user_collection
+from app.config import load_env
+import json
 
 config = load_env()
 API_KEY = config['API_KEY']
@@ -24,40 +26,50 @@ def fetch_battle_logs(username: str) -> dict:
 
     return response.json()
 
-def find_specific_opp_battle(battlelog: dict, opponent: str) -> dict:
-    for battle in battlelog['items']:
-        if any(player['tag'] == opponent for player in battle['opponent']):
-            return battle
+def calculate_crowns(players: list, username: str) -> int:
+    return sum(player['crowns'] for player in players if 'tag' in player and player['tag'] == username)
+
+def find_latest_battle(battlelog: list) -> dict:
+    latest_battle = None
+
+    for battle in battlelog:
+        battle_time = datetime.strptime(battle['battleTime'], "%Y%m%dT%H%M%S.%fZ").replace(tzinfo=timezone.utc)
+        if not latest_battle or battle_time > datetime.strptime(latest_battle['battleTime'], "%Y%m%dT%H%M%S.%fZ").replace(tzinfo=timezone.utc):
+            latest_battle = battle
+
+    return latest_battle
+
+def determine_winner(userTag1: str, userTag2: str, current_time: datetime) -> dict:
+    userTag1_battlelog = fetch_battle_logs(userTag1)
+
+    # # Save the battle log to a JSON file for debugging
+    # with open(f'battlelog_{userTag1}_{datetime.now().strftime("%Y%m%d%H%M%S")}.json', 'w') as f:
+    #     json.dump(userTag1_battlelog, f, indent=4)
+
+    # Directly work with userTag1_battlelog assuming it's a list
+    if isinstance(userTag1_battlelog, list):
+        latest_battle = find_latest_battle(userTag1_battlelog)
+
+        if not latest_battle:
+            return None
+
+        # Ensure the players in the latest match are the expected players
+        latest_battle_players = [player['tag'] for player in latest_battle.get('team', []) + latest_battle.get('opponent', [])]
+        if userTag1 not in latest_battle_players or userTag2 not in latest_battle_players:
+            raise HTTPException(status_code=400, detail="The latest match does not involve the expected players.")
+
+        # Check if this battle has already been processed
+        match_in_db = user_collection.find_one({"userTag": userTag1})
+        last_processed_time = match_in_db.get('lastProcessedBattleTime') if match_in_db else None
+        latest_battle_time = datetime.strptime(latest_battle['battleTime'], "%Y%m%dT%H%M%S.%fZ").replace(tzinfo=timezone.utc)
+
+        if last_processed_time and latest_battle_time <= datetime.strptime(last_processed_time, "%Y%m%dT%H%M%S.%fZ").replace(tzinfo=timezone.utc):
+            raise HTTPException(status_code=400, detail="This match has already been processed")
+
+        # Ensure correct identification of team and opponent
+        team_crowns = calculate_crowns(latest_battle.get('team', []), userTag1)
+        opponent_crowns = calculate_crowns(latest_battle.get('opponent', []), userTag2)
+
+        return {"winner": userTag1 if team_crowns > opponent_crowns else userTag2 if opponent_crowns > team_crowns else None}
 
     return None
-
-def find_closest_battle(battlelog: dict, opponent: str, current_time: datetime) -> dict:
-    min_time_diff = timedelta(minutes=14)
-    closest_match = None
-
-    for battle in battlelog['items']:
-        battle_time = datetime.strptime(battle['battleTime'], "%Y%m%dT%H%M%S.%fZ").replace(tzinfo=timezone.utc)
-        if current_time - timedelta(minutes=14) <= battle_time <= current_time:
-            if not closest_match or abs(battle_time - current_time) < abs(closest_match['battleTime'] - current_time):
-                if any(player['tag'] == opponent for player in battle['opponent']):
-                    closest_match = battle
-
-    return closest_match
-
-def calculate_crowns(players: list, username: str) -> int:
-    return sum(player['crowns'] for player in players if player['tag'] == username)
-
-def determine_winner(username: str, opponent: str, current_time: datetime) -> dict:
-    username_battlelog = fetch_battle_logs(username)
-    closest_match = find_closest_battle(username_battlelog, opponent, current_time)
-
-    if not closest_match:
-        return None
-
-    username_crowns = calculate_crowns(closest_match['team'], username)
-    opponent_crowns = calculate_crowns(closest_match['opponent'], opponent)
-
-    if username_crowns > opponent_crowns:
-        return {"winner": username}
-    elif opponent_crowns > username_crowns:
-        return {"winner": opponent}
