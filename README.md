@@ -15,3 +15,6 @@
 1. Make sure the environment variables are set in the .env file in the root of the project
 2. Run ```docker-compose build``` to build the images
 3. Run ```docker-compose up``` to start the containers
+4. The backend will be available at ```http://localhost:8000``` and the frontend at ```http://localhost:3000```
+5. Stop the containers with ```docker-compose down```
+    1. Or remove the containers with ```docker-compose down --volumes --rmi all```
