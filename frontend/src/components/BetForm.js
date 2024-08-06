@@ -45,26 +45,26 @@ function BetForm({ betAmount, onBetAmountChange }) {
       <div className="input-group">
         <div className="input-wrapper">
           <label htmlFor="player1">User Tag:</label>
-          <input 
-            type="text" 
-            id="player1" 
-            name="player1" 
-            value={player1Tag} 
-            onChange={(e) => handleTagChange(setPlayer1Tag, e.target.value)} 
+          <input
+            type="text"
+            id="player1"
+            name="player1"
+            value={player1Tag}
+            onChange={(e) => handleTagChange(setPlayer1Tag, e.target.value)}
           />
         </div>
         <div className="input-wrapper">
           <label htmlFor="player2">Opponent Tag:</label>
-          <input 
-            type="text" 
-            id="player2" 
-            name="player2" 
-            value={player2Tag} 
-            onChange={(e) => handleTagChange(setPlayer2Tag, e.target.value)} 
+          <input
+            type="text"
+            id="player2"
+            name="player2"
+            value={player2Tag}
+            onChange={(e) => handleTagChange(setPlayer2Tag, e.target.value)}
           />
         </div>
       </div>
-      <button type="submit" disabled={isSubmitting}>
+      <button type="submit" disabled={isSubmitting} style={{marginRight:'10px'}}>
         {isSubmitting ? (
           <i className="fa fa-spinner fa-spin"></i>
         ) : isCompleted ? (
