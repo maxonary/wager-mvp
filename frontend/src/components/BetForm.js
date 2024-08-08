@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import 'font-awesome/css/font-awesome.min.css'; // Import Font Awesome CSS
 import '../styles.css'; // Import the updated CSS file
+import axios from 'axios'
 
 function BetForm({ betAmount, onBetAmountChange }) {
   const [player1Tag, setPlayer1Tag] = useState('#');
   const [player2Tag, setPlayer2Tag] = useState('#');
+  const [rangeValue, setRangeValue] = useState(0)
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false); // Add this state
@@ -24,15 +26,23 @@ function BetForm({ betAmount, onBetAmountChange }) {
     if (player1Tag.length !== 10 || player2Tag.length !== 10) {
       setError('Your gamertag is 9 characters long');
     } else {
-      setError('');
-      setIsSubmitting(true);
-      setIsCompleted(false); // Reset completion status
+      const body = {
+        "userTag1": player1Tag,
+        "userTag2": player2Tag,
+        "betAmount": parseInt(rangeValue)
+      }
+      axios.post('https://backend-service-fuf2ajnimq-wl.a.run.app/api/v1/match', body)
+        .then((response) => {
+          setError('');
+          setIsSubmitting(true);
+          setIsCompleted(false); // Reset completion status
 
-      // Simulate an asynchronous operation like an API call
-      setTimeout(() => {
-        setIsSubmitting(false);
-        setIsCompleted(true); // Mark as completed after the operation
-      }, 2000); // Simulate a 2-second delay
+          // Simulate an asynchronous operation like an API call
+          setTimeout(() => {
+            setIsSubmitting(false);
+            setIsCompleted(true); // Mark as completed after the operation
+          }, 2000); // Simulate a 2-second delay
+        })
     }
   };
 
@@ -64,7 +74,12 @@ function BetForm({ betAmount, onBetAmountChange }) {
           />
         </div>
       </div>
-      <button type="submit" disabled={isSubmitting} style={{marginRight:'10px'}}>
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center' }}>
+        <p>Bet Amount:</p>
+        <input type='range' className='range-slider' max={10} onChange={(e) => setRangeValue(e.target.value)} style={{ width: '50%',margin:'0px 5px' }} value={rangeValue} />
+        <p>{rangeValue}</p>
+      </div>
+      <button type="submit" disabled={isSubmitting} style={{ marginRight: '10px' }}>
         {isSubmitting ? (
           <i className="fa fa-spinner fa-spin"></i>
         ) : isCompleted ? (
