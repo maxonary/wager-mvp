@@ -5,8 +5,15 @@ from app.api.endpoints import createMatch
 from app.api.endpoints import getMatchResult
 from app.api.endpoints import getLeaderBoard
 from app.api.endpoints import increaseBalance
+from fastapi.middleware.cors import CORSMiddleware
+
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:3000",
+    # Add other origins if needed
+]
 
 # app.include_router(getData.router, prefix="/api/v1")
 app.include_router(createUser.router, prefix="/api/v1")
@@ -16,3 +23,11 @@ app.include_router(getLeaderBoard.router, prefix="/api/v1")
 app.include_router(increaseBalance.router, prefix="/api/v1")
 
 
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
