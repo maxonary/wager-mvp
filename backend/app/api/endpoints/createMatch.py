@@ -57,8 +57,6 @@ async def create_match(request: CreateMatchRequest):
             "betAmount": new_match.betAmount
         }
     
-    except HTTPException as e:
-        raise e
     except Exception as e:
         # Handle exceptions and return a 500 error response
         raise HTTPException(status_code=500, detail=f"An error occurred while creating the match: {str(e)}")
