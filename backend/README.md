@@ -6,6 +6,7 @@ Built on FastAPI
 2. Activate the virtual environment ```source venv/bin/activate```
 3. Install the dependencies ```pip install -r requirements.txt```
 4. Copy the .env.example file to .env ```cp .env.example .env``` and fill in the required fields
+    1. Go to https://developer.clashroyale.com/ and create a new API Key. Bare in mind to update it with your IP address
 
 ## Running the server
 1. Run the server ```uvicorn app.main:app --reload```

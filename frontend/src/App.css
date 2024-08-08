@@ -9,14 +9,21 @@ body {
   background-color: #f0f2f5;
 }
 
+.App{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .container {
   text-align: center;
   background-color: #ffffff;
   padding: 30px;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-width: 400px;
-  width: 100%;
+  /* max-width: 400px; */
+  /* width: 100%; */
+  width: 600px;
 }
 
 h1 {
@@ -142,4 +149,18 @@ li {
 
 .modal-content button:hover {
   background-color: #0056b3;
+}
+
+
+body{
+  background-color: lightgray;
+}
+
+button{
+  background: black;
+  color: white;
+}
+
+button:hover{
+  background: #000000ca;
 }

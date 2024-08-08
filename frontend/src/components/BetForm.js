@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import 'font-awesome/css/font-awesome.min.css'; // Import Font Awesome CSS
+import '../styles.css'; // Import the updated CSS file
 
 function BetForm({ betAmount, onBetAmountChange }) {
   const [player1Tag, setPlayer1Tag] = useState('#');
   const [player2Tag, setPlayer2Tag] = useState('#');
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false); // Add this state
 
   const handleSliderChange = (event) => {
     onBetAmountChange(parseInt(event.target.value, 10));
@@ -20,7 +25,14 @@ function BetForm({ betAmount, onBetAmountChange }) {
       setError('Your gamertag is 9 characters long');
     } else {
       setError('');
-      // Submit form logic here
+      setIsSubmitting(true);
+      setIsCompleted(false); // Reset completion status
+
+      // Simulate an asynchronous operation like an API call
+      setTimeout(() => {
+        setIsSubmitting(false);
+        setIsCompleted(true); // Mark as completed after the operation
+      }, 2000); // Simulate a 2-second delay
     }
   };
 
@@ -32,39 +44,39 @@ function BetForm({ betAmount, onBetAmountChange }) {
     <form onSubmit={handleSubmit}>
       <div className="input-group">
         <div className="input-wrapper">
-          <label htmlFor="player1">Player 1 Tag:</label>
-          <input 
-            type="text" 
-            id="player1" 
-            name="player1" 
-            value={player1Tag} 
-            onChange={(e) => handleTagChange(setPlayer1Tag, e.target.value)} 
+          <label htmlFor="player1">User Tag:</label>
+          <input
+            type="text"
+            id="player1"
+            name="player1"
+            value={player1Tag}
+            onChange={(e) => handleTagChange(setPlayer1Tag, e.target.value)}
           />
         </div>
         <div className="input-wrapper">
-          <label htmlFor="player2">Player 2 Tag:</label>
-          <input 
-            type="text" 
-            id="player2" 
-            name="player2" 
-            value={player2Tag} 
-            onChange={(e) => handleTagChange(setPlayer2Tag, e.target.value)} 
+          <label htmlFor="player2">Opponent Tag:</label>
+          <input
+            type="text"
+            id="player2"
+            name="player2"
+            value={player2Tag}
+            onChange={(e) => handleTagChange(setPlayer2Tag, e.target.value)}
           />
         </div>
       </div>
-      <div className="slider-container">
-        <label htmlFor="betAmount">Bet Amount: <span>${betAmount}</span></label>
-        <input
-          type="range"
-          id="betAmount"
-          name="betAmount"
-          min="0"
-          max="100"
-          value={betAmount}
-          onChange={handleSliderChange}
-        />
-      </div>
-      <button type="submit">Place Bet</button>
+      <button type="submit" disabled={isSubmitting} style={{marginRight:'10px'}}>
+        {isSubmitting ? (
+          <i className="fa fa-spinner fa-spin"></i>
+        ) : isCompleted ? (
+          <i className="fa fa-check"></i> // Display check mark when completed
+        ) : (
+          'Start Bet'
+        )}
+      </button>
+
+      {isSubmitting && (
+        <p className="in-progress-text">Match Id: 1X3eR4</p>
+      )}
 
       {error && (
         <div className="modal">
@@ -74,6 +86,11 @@ function BetForm({ betAmount, onBetAmountChange }) {
           </div>
         </div>
       )}
+
+      {/* Link to Another Page */}
+      <Link to="/anotherpage">
+        <button type="button">Leaderboard</button>
+      </Link>
     </form>
   );
 }

@@ -4,7 +4,6 @@ certifi==2024.7.4
 charset-normalizer==3.3.2
 click==8.1.7
 dnspython==1.16.0
-fastapi==0.112.0
 h11==0.14.0
 idna==3.7
 pydantic==2.8.2
@@ -20,3 +19,4 @@ starlette==0.37.2
 typing_extensions==4.12.2
 urllib3==2.2.2
 uvicorn==0.30.5
+fastapi[standard]
