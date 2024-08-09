@@ -19,6 +19,10 @@ async def create_match(request: CreateMatchRequest):
         if request.userTag1 == request.userTag2:
             raise HTTPException(status_code=400, detail="The same userTag cannot be used for both players.")
 
+        # Check if the bet amount is greater than 0
+        if request.betAmount <= 0:
+            raise HTTPException(status_code=400, detail=f"Bet amount must be greater than 0.")
+
         # Fetch the balance of both players
         player1 = user_collection.find_one({"userTag": request.userTag1})
         player2 = user_collection.find_one({"userTag": request.userTag2})
