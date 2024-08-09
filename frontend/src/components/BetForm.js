@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import 'font-awesome/css/font-awesome.min.css'; // Import Font Awesome CSS
 import '../styles.css'; // Import the updated CSS file
 import axios from 'axios'
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 function BetForm({ betAmount, onBetAmountChange }) {
   const [player1Tag, setPlayer1Tag] = useState('#');
@@ -31,7 +34,7 @@ function BetForm({ betAmount, onBetAmountChange }) {
         "userTag2": player2Tag,
         "betAmount": parseInt(rangeValue)
       }
-      axios.post('https://backend-service-fuf2ajnimq-wl.a.run.app/api/v1/match', body)
+      axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/match`, body)
         .then((response) => {
           setError('');
           setIsSubmitting(true);
