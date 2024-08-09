@@ -1,10 +1,17 @@
 .leaderboard-container {
-  width: auto;
-  margin: 20px;
-  padding: 20px;
-  background-color: #fff;
+  width: 100%;
+  max-height: 400px; /* Set a fixed height for the leaderboard */
+  overflow-y: auto; /* Make the leaderboard scrollable if content overflows */
+  background-color: #ffffff;
   border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+@media only screen and (max-width: 768px) and (orientation: landscape) {
+  .leaderboard-container {
+    max-height: 200px; /* Reduce height for landscape mode on phones */
+  }
 }
 
 .leaderboard-table {
