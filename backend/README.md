@@ -62,6 +62,10 @@ GetMatchResult:
     "matchID": "8b120575-84c2-485e-96b7-6ae1485b245e",
     "winnerUserTag": "#UG2UPCYYC",
     "betAmount": 5
+    "winnerUserName": xxx,
+    "winnerNewBalance": xxx,
+    "loserUserName": xxx,
+    "loserNewBalance": xxx
 }
 
 Erro Result:

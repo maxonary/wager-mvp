@@ -2,18 +2,21 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import 'font-awesome/css/font-awesome.min.css'; // Import Font Awesome CSS
 import '../styles.css'; // Import the updated CSS file
-import axios from 'axios'
+import axios from 'axios';
 
 function BetForm({ betAmount, onBetAmountChange }) {
   const [player1Tag, setPlayer1Tag] = useState('#');
   const [player2Tag, setPlayer2Tag] = useState('#');
-  const [rangeValue, setRangeValue] = useState(0)
+  const [rangeValue, setRangeValue] = useState(1); // Updated initial state to 1
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isCompleted, setIsCompleted] = useState(false); // Add this state
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [matchID, setMatchID] = useState(null);
+  const [result, setResult] = useState(null);
 
   const handleSliderChange = (event) => {
     onBetAmountChange(parseInt(event.target.value, 10));
+    setRangeValue(event.target.value);
   };
 
   const handleTagChange = (setter, value) => {
@@ -27,24 +30,50 @@ function BetForm({ betAmount, onBetAmountChange }) {
       setError('Your gamertag is 9 characters long');
     } else {
       const body = {
-        "userTag1": player1Tag,
-        "userTag2": player2Tag,
-        "betAmount": parseInt(rangeValue)
-      }
-      axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/match`, body)
+        userTag1: player1Tag,
+        userTag2: player2Tag,
+        betAmount: parseInt(rangeValue),
+      };
+      axios
+        .post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/match`, body)
         .then((response) => {
           setError('');
           setIsSubmitting(true);
-          setIsCompleted(false); // Reset completion status
+          setIsCompleted(false);
 
-          // Simulate an asynchronous operation like an API call
           setTimeout(() => {
             setIsSubmitting(false);
-            setIsCompleted(true); // Mark as completed after the operation
+            setIsCompleted(true);
+            setMatchID(response.data.matchID); // Save match ID
           }, 2000); // Simulate a 2-second delay
         })
+        .catch((error) => {
+          setError('Failed to start bet. Please try again.');
+        });
     }
   };
+
+  const handleFetchResult = () => {
+    if (!matchID) return;
+    setIsSubmitting(true);
+  
+    // Prepare the request body
+    const requestBody = {
+      matchID: matchID,
+    };
+  
+    axios
+      .post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/match/result`, requestBody) // Send matchID as body
+      .then((response) => {
+        setIsSubmitting(false);
+        setResult(response.data);
+      })
+      .catch((error) => {
+        setIsSubmitting(false);
+        setError('Failed to fetch result. Please try again.');
+      });
+  };
+  
 
   const closeModal = () => {
     setError('');
@@ -74,23 +103,40 @@ function BetForm({ betAmount, onBetAmountChange }) {
           />
         </div>
       </div>
-      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center' }}>
-        <p>Bet Amount:</p>
-        <input type='range' className='range-slider' max={10} onChange={(e) => setRangeValue(e.target.value)} style={{ width: '50%',margin:'0px 5px' }} value={rangeValue} />
-        <p>{rangeValue}</p>
-      </div>
-      <button type="submit" disabled={isSubmitting} style={{ marginRight: '10px' }}>
-        {isSubmitting ? (
-          <i className="fa fa-spinner fa-spin"></i>
-        ) : isCompleted ? (
-          <i className="fa fa-check"></i> // Display check mark when completed
-        ) : (
-          'Start Bet'
-        )}
-      </button>
 
-      {isSubmitting && (
-        <p className="in-progress-text">Match Id: 1X3eR4</p>
+      {!isCompleted ? (
+        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center' }}>
+          <p>Bet Amount:</p>
+          <input
+            type="range"
+            className="range-slider"
+            min={1} // Updated minimum value to 1
+            max={10}
+            onChange={handleSliderChange}
+            style={{ width: '50%', margin: '0px 5px' }}
+            value={rangeValue}
+          />
+          <p>{rangeValue}</p>
+        </div>
+      ) : (
+        <p>You're Wagering ${rangeValue} - let the game begin!</p>
+      )}
+
+      {!isCompleted ? (
+        <button type="submit" disabled={isSubmitting} style={{ marginRight: '10px' }}>
+          {isSubmitting ? <i className="fa fa-spinner fa-spin"></i> : 'Start Bet'}
+        </button>
+      ) : (
+        <button type="button" onClick={handleFetchResult} disabled={isSubmitting}>
+          {isSubmitting ? <i className="fa fa-spinner fa-spin"></i> : 'Fetch Result'}
+        </button>
+      )}
+
+      {result && (
+        <div className="result">
+          <p>Winner: {result.winnerUserName} (New Balance: {result.winnerNewBalance})</p>
+          <p>Loser: {result.loserUserName} (New Balance: {result.loserNewBalance})</p>
+        </div>
       )}
 
       {error && (
