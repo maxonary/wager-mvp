@@ -1,14 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../styles.css'; // Import the updated CSS file
-
-const players = [
-  { name: 'Player1', userId: '123456789', winnings: '$100' },
-  { name: 'Player2', userId: '987654321', winnings: '$200' },
-  { name: 'Player3', userId: '192837465', winnings: '$150' },
-  // Add more players as needed
-];
+import axios from 'axios';
 
 function AnotherPage() {
+  const [data, setData] = useState([]);
+
+  function getData() {
+    axios.get('https://backend-service-fuf2ajnimq-wl.a.run.app/api/v1/leaderboard')
+      .then((resp) => {
+        const leaderboard = resp.data.leaderboard;
+        // Sort the leaderboard by balance in descending order
+        const sortedLeaderboard = leaderboard.sort((a, b) => b.balance - a.balance);
+        setData(sortedLeaderboard);
+      })
+      .catch(error => {
+        console.error("Error fetching data:", error);
+      });
+  }
+
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
     <div className="leaderboard-container">
       <h2>Leaderboard</h2>
@@ -16,16 +29,14 @@ function AnotherPage() {
         <thead>
           <tr>
             <th>Player Name</th>
-            <th>User ID</th>
-            <th>Winnings</th>
+            <th>Balance</th>
           </tr>
         </thead>
         <tbody>
-          {players.map((player, index) => (
+          {data.map((player, index) => (
             <tr key={index}>
-              <td>{player.name}</td>
-              <td>{player.userId}</td>
-              <td>{player.winnings}</td>
+              <td>{player.username ? player.username : 'Anonymous'}</td>
+              <td>${player.balance}</td>
             </tr>
           ))}
         </tbody>

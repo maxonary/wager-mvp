@@ -26,12 +26,26 @@ async def create_user(request: CreateUserRequest):
     # Fetch battle log to validate the user exists in Clash Royale
     try:
         user_battle_log = fetch_battle_logs(userTag)
-        print(user_battle_log)
+        # print(user_battle_log)
     except HTTPException as e:
         raise HTTPException(status_code=404, detail="User not found in Clash Royale")
 
+    # Extract userName from the battle log's team section
+    userName = None
+    for battle in user_battle_log:
+        for player in battle.get('team', []):
+            if player.get('tag') == userTag:
+                userName = player.get('name')
+                break
+        if userName:
+            break
+
+    # If userName is not found, set it to "Unknown"
+    if not userName:
+        userName = "Unknown"
+
     # If user exists, create a new user in the database
-    new_user = User(userTag=userTag)
+    new_user = User(userTag=userTag, username=userName)
     result = user_collection.insert_one(new_user.dict())
 
     return {"message": "Success", "userID": str(result.inserted_id), "balance": new_user.balance}
