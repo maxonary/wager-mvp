@@ -57,7 +57,7 @@ function BetForm({ betAmount, onBetAmountChange }) {
     if (!matchID) return;
     setIsSubmitting(true);
     axios
-      .get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/match/result?matchID=${matchID}`)
+      .post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/match/result?matchID=${matchID}`)
       .then((response) => {
         setIsSubmitting(false);
         setResult(response.data);
