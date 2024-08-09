@@ -3,7 +3,6 @@ from pydantic import BaseModel
 from app.db import match_collection, user_collection, get_db_client
 from app.services.battlelog import determine_winner
 from datetime import datetime, timezone
-import pymongo
 
 router = APIRouter()
 
@@ -36,10 +35,13 @@ async def get_match_result(request: MatchResultRequest):
         # Step 3: Determine the winner using the Clash Royale API
         winner = determine_winner(userTag1, userTag2, datetime.now(timezone.utc))
         if winner is None:
-            # Update the match to indicate it was a draw
+            # Update the match to indicate it was a draw and set checkedTime
             match_collection.update_one(
                 {"matchID": matchID},
-                {"$set": {"checked": True}},
+                {"$set": {
+                    "checked": True,
+                    "checkedTime": datetime.now(timezone.utc)
+                }},
                 session=session
             )
             session.commit_transaction()
@@ -51,18 +53,20 @@ async def get_match_result(request: MatchResultRequest):
 
         # Step 4: Update the match record in the database
         winnerTag = winner['winner']
+        checked_time = datetime.now(timezone.utc)
         match_collection.update_one(
             {"matchID": matchID},
             {"$set": {
                 "winnerUserID": winnerTag,
-                "checked": True
+                "checked": True,
+                "checkedTime": checked_time
             }},
             session=session
         )
 
         # Step 5: Update the user balances and wins atomically
         loserTag = userTag1 if winnerTag == userTag2 else userTag2
-        latest_battle_time_str = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ")
+        latest_battle_time_str = checked_time.strftime("%Y%m%dT%H%M%S.%fZ")
 
         # Update winner balance and wins
         user_collection.update_one(
@@ -84,15 +88,25 @@ async def get_match_result(request: MatchResultRequest):
             session=session
         )
 
+        # Retrieve the updated balances of both players
+        updated_winner = user_collection.find_one({"userTag": winnerTag}, session=session)
+        updated_loser = user_collection.find_one({"userTag": loserTag}, session=session)
+
         # Commit the transaction
         session.commit_transaction()
 
-        # Return the match result
+        # Return the match result, including the updated balances
         return {
             "message": "Success",
             "matchID": matchID,
             "winnerUserTag": winnerTag,
-            "betAmount": betAmount
+            "loserUserTag": loserTag,
+            "betAmount": betAmount,
+            "winnerUserName": updated_winner['username'],
+            "loserUserName": updated_loser['username'],
+            "checkedTime": checked_time.isoformat(),
+            "winnerNewBalance": updated_winner['balance'],
+            "loserNewBalance": updated_loser['balance']
         }
 
     except HTTPException as e:
