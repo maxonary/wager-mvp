@@ -48,23 +48,24 @@ function AnotherPage() {
       <table className="leaderboard-table">
         <thead>
           <tr>
-            <th>Player Name</th>
-            <th>User Tag</th>
+            <th>Player Name
+              <br/>
+              (Click to add as friend)
+            </th>
             <th>Balance</th>
           </tr>
         </thead>
         <tbody>
           {data.map((player, index) => (
             <tr key={index}>
-              <td>{player.username ? player.username : 'Anonymous'}</td>
-              <td 
-                className="user-tag" 
-                onClick={() => openClashRoyaleApp(player.userTag)}
-                style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}
-              >
-                {player.userTag}
+              <td onClick={() => openClashRoyaleApp(player.userTag)}>
+                <strong>{player.username ? player.username : 'Anonymous'}</strong>
+                <br />
+                {player.userTag} 
               </td>
-              <td>${player.balance}</td>
+              <td>
+                <strong>${player.balance}</strong>
+              </td>
             </tr>
           ))}
         </tbody>
