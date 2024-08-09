@@ -7,7 +7,7 @@ import axios from 'axios';
 function BetForm({ betAmount, onBetAmountChange }) {
   const [player1Tag, setPlayer1Tag] = useState('#');
   const [player2Tag, setPlayer2Tag] = useState('#');
-  const [rangeValue, setRangeValue] = useState(0);
+  const [rangeValue, setRangeValue] = useState(1); // Updated initial state to 1
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
@@ -103,6 +103,7 @@ function BetForm({ betAmount, onBetAmountChange }) {
           <input
             type="range"
             className="range-slider"
+            min={1} // Updated minimum value to 1
             max={10}
             onChange={handleSliderChange}
             style={{ width: '50%', margin: '0px 5px' }}
