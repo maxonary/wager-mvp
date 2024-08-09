@@ -24,24 +24,6 @@ function AnotherPage() {
     getData();
   }, []);
 
-  const openClashRoyaleApp = (userTag) => {
-    copyToClipboard(userTag);
-
-    if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
-      window.location.replace(`clashroyale://?addFriend=${userTag}`);
-      setTimeout(() => {
-        window.location.replace("https://apps.apple.com/app/clash-royale/id1053012308");
-      }, 10000);
-    } else if (/Android/.test(navigator.userAgent)) {
-      window.location.replace(`intent://addfriend/#Intent;scheme=clashroyale;package=com.supercell.clashroyale;end`);
-      setTimeout(() => {
-        window.location.replace("https://play.google.com/store/apps/details?id=com.supercell.clashroyale");
-      }, 10000);
-    } else {
-      alert('UserTag copied to clipboard. Please open this link on a mobile device with Clash Royale installed.');
-    }
-  };
-
   return (
     <div className="leaderboard-container">
       <h2>Leaderboard</h2>
@@ -50,7 +32,7 @@ function AnotherPage() {
           <tr>
             <th>Player Name
               <br/>
-              (Click to add as friend)
+              (Click to copy user tag)
             </th>
             <th>Balance</th>
           </tr>
@@ -58,7 +40,7 @@ function AnotherPage() {
         <tbody>
           {data.map((player, index) => (
             <tr key={index}>
-              <td onClick={() => openClashRoyaleApp(player.userTag)}>
+              <td onClick={() => copyToClipboard(player.userTag)}>
                 <strong>{player.username ? player.username : 'Anonymous'}</strong>
                 <br />
                 {player.userTag} 
@@ -70,7 +52,6 @@ function AnotherPage() {
           ))}
         </tbody>
       </table>
-      
       {/* Button to go back to BetForm */}
       <Link to="/">
         <button className="back-button">Start a new a bet</button>
