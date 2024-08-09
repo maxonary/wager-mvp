@@ -56,8 +56,14 @@ function BetForm({ betAmount, onBetAmountChange }) {
   const handleFetchResult = () => {
     if (!matchID) return;
     setIsSubmitting(true);
+  
+    // Prepare the request body
+    const requestBody = {
+      matchID: matchID,
+    };
+  
     axios
-      .post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/match/result?matchID=${matchID}`)
+      .post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/match/result`, requestBody) // Send matchID as body
       .then((response) => {
         setIsSubmitting(false);
         setResult(response.data);
@@ -67,6 +73,7 @@ function BetForm({ betAmount, onBetAmountChange }) {
         setError('Failed to fetch result. Please try again.');
       });
   };
+  
 
   const closeModal = () => {
     setError('');
