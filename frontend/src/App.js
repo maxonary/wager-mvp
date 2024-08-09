@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import BetForm from './components/BetForm';
 import Leaderboard from './components/Leaderboard';
-import AnotherPage from './components/AnotherPage'; // Import your new page component
 import './App.css';
 import './styles.css';
 
@@ -20,7 +19,6 @@ function App() {
           <h1>Wager</h1>
           <Routes>
             <Route path="/" element={<BetForm betAmount={betAmount} onBetAmountChange={handleBetAmountChange} />} />
-            <Route path="/anotherpage" element={<AnotherPage />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
           </Routes>
         </div>
