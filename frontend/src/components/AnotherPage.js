@@ -24,13 +24,11 @@ function AnotherPage() {
 
   const openClashRoyaleApp = (userTag) => {
     if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
-      // iOS device
       window.location.replace(`clashroyale://?addFriend=${userTag}`);
       setTimeout(() => {
         window.location.replace("https://apps.apple.com/app/clash-royale/id1053012308");
       }, 10000);
     } else if (/Android/.test(navigator.userAgent)) {
-      // Android device
       window.location.replace(`intent://addfriend/#Intent;scheme=clashroyale;package=com.supercell.clashroyale;end`);
       setTimeout(() => {
         window.location.replace("https://play.google.com/store/apps/details?id=com.supercell.clashroyale");
