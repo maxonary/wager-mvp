@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from app.db import match_collection, user_collection
 from app.models.matchModel import Match
+from datetime import datetime, timezone
 import uuid
 
 router = APIRouter()
@@ -40,13 +41,14 @@ async def create_match(request: CreateMatchRequest):
         # Create a MatchID
         matchID = str(uuid.uuid4())
 
-        # Create a new match object
+        # Create a new match object with createdTime
         new_match = Match(
             matchID=matchID,
             userTag1=request.userTag1,
             userTag2=request.userTag2,
             betAmount=request.betAmount,
-            checked=False
+            checked=False,
+            createdTime=datetime.now(timezone.utc)  # Record the created time
         )
         
         # Insert the match into the database
@@ -58,7 +60,8 @@ async def create_match(request: CreateMatchRequest):
         return {
             "message": "Success",
             "matchID": new_match.matchID,
-            "betAmount": new_match.betAmount
+            "betAmount": new_match.betAmount,
+            "createdTime": new_match.createdTime.isoformat()  # Return createdTime as well
         }
     
     except Exception as e:
