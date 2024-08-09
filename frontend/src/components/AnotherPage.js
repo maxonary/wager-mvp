@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import '../styles.css'; // Import the updated CSS file
 import axios from 'axios';
 
@@ -41,6 +42,11 @@ function AnotherPage() {
           ))}
         </tbody>
       </table>
+      
+      {/* Button to go back to BetForm */}
+      <Link to="/">
+        <button className="back-button">Start a new a bet</button>
+      </Link>
     </div>
   );
 }
