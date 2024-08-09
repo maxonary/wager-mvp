@@ -119,7 +119,7 @@ function BetForm({ betAmount, onBetAmountChange }) {
           <p>{rangeValue}</p>
         </div>
       ) : (
-        <p>You are now playing for this {rangeValue}</p>
+        <p>You're Wagering ${rangeValue} - let the game begin!</p>
       )}
 
       {!isCompleted ? (
