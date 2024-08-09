@@ -31,7 +31,7 @@ function BetForm({ betAmount, onBetAmountChange }) {
         "userTag2": player2Tag,
         "betAmount": parseInt(rangeValue)
       }
-      axios.post('https://backend-service-fuf2ajnimq-wl.a.run.app/api/v1/match', body)
+      axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/match`, body)
         .then((response) => {
           setError('');
           setIsSubmitting(true);
