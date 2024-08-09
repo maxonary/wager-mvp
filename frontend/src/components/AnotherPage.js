@@ -37,7 +37,7 @@ function AnotherPage() {
         window.location.replace("https://play.google.com/store/apps/details?id=com.supercell.clashroyale");
       }, 10000);
     } else {
-      alert('Please open this link on a mobile device with Clash Royale installed.');
+      alert('UserTag copied to clipboard. Please open this link on a mobile device with Clash Royale installed.');
     }
   };
 
