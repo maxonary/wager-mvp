@@ -7,7 +7,7 @@ router = APIRouter()
 async def get_leaderboard():
     try:
         # Fetch all users from the collection, sorted by balance in descending order
-        leaderboard = list(user_collection.find({}, {"_id": 0, "userTag": 1, "balance": 1, "wins": 1}).sort("balance", -1))
+        leaderboard = list(user_collection.find({}, {"_id": 0, "userTag": 1, "balance": 1, "wins": 1, "username": 1}).sort("balance", -1))
 
         # Return the leaderboard as a JSON response
         return {
