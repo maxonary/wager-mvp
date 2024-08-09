@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import '../styles.css'; // Import the updated CSS file
 import axios from 'axios';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 function AnotherPage() {
   const [data, setData] = useState([]);

@@ -3,9 +3,6 @@ import { Link } from 'react-router-dom';
 import 'font-awesome/css/font-awesome.min.css'; // Import Font Awesome CSS
 import '../styles.css'; // Import the updated CSS file
 import axios from 'axios'
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 function BetForm({ betAmount, onBetAmountChange }) {
   const [player1Tag, setPlayer1Tag] = useState('#');
