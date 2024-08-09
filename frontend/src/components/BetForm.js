@@ -16,6 +16,7 @@ function BetForm({ betAmount, onBetAmountChange }) {
 
   const handleSliderChange = (event) => {
     onBetAmountChange(parseInt(event.target.value, 10));
+    setRangeValue(event.target.value);
   };
 
   const handleTagChange = (setter, value) => {
@@ -95,18 +96,24 @@ function BetForm({ betAmount, onBetAmountChange }) {
           />
         </div>
       </div>
-      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center' }}>
-        <p>Bet Amount:</p>
-        <input
-          type="range"
-          className="range-slider"
-          max={10}
-          onChange={(e) => setRangeValue(e.target.value)}
-          style={{ width: '50%', margin: '0px 5px' }}
-          value={rangeValue}
-        />
-        <p>{rangeValue}</p>
-      </div>
+
+      {!isCompleted ? (
+        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center' }}>
+          <p>Bet Amount:</p>
+          <input
+            type="range"
+            className="range-slider"
+            max={10}
+            onChange={handleSliderChange}
+            style={{ width: '50%', margin: '0px 5px' }}
+            value={rangeValue}
+          />
+          <p>{rangeValue}</p>
+        </div>
+      ) : (
+        <p>You are now playing for this {rangeValue}</p>
+      )}
+
       {!isCompleted ? (
         <button type="submit" disabled={isSubmitting} style={{ marginRight: '10px' }}>
           {isSubmitting ? <i className="fa fa-spinner fa-spin"></i> : 'Start Bet'}
