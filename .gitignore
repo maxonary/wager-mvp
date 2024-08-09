@@ -6,4 +6,6 @@ node_modules
 *.pyc
 *.pyo
 *.pyd
-__pycache__/
+
+
+.DS_Store
