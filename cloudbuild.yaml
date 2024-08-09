@@ -6,8 +6,6 @@ steps:
   - |
     docker build -t us-west2-docker.pkg.dev/$PROJECT_ID/wager-docker-repo/frontend-image:tag1 ./frontend
     docker build -t us-west2-docker.pkg.dev/$PROJECT_ID/wager-docker-repo/backend-image:tag1 ./backend
-    docker push us-west2-docker.pkg.dev/$PROJECT_ID/wager-docker-repo/frontend-image:tag1
-    docker push us-west2-docker.pkg.dev/$PROJECT_ID/wager-docker-repo/backend-image:tag1
 
 - name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: 'gcloud'

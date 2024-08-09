@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from app.api.endpoints import getIP
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.endpoints import getData
 from app.api.endpoints import createUser
@@ -20,6 +21,8 @@ app.add_middleware(
 )
 
 # app.include_router(getData.router, prefix="/api/v1")
+
+app.include_router(getIP.router, prefix="/api/v1")
 app.include_router(createUser.router, prefix="/api/v1")
 app.include_router(createMatch.router, prefix="/api/v1")
 app.include_router(getMatchResult.router, prefix="/api/v1")
