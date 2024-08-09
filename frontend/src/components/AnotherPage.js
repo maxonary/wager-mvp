@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import '../styles.css'; // Import the updated CSS file
 import axios from 'axios';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 function AnotherPage() {
   const [data, setData] = useState([]);
 
   function getData() {
-    axios.get('https://backend-service-fuf2ajnimq-wl.a.run.app/api/v1/leaderboard')
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/leaderboard`)
       .then((resp) => {
         const leaderboard = resp.data.leaderboard;
         // Sort the leaderboard by balance in descending order
