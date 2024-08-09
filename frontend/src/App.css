@@ -9,6 +9,12 @@ body {
   overflow: hidden; /* Prevents scrolling */
 }
 
+@media only screen and (max-width: 768px) and (orientation: landscape) {
+  body {
+    height: 100vh; /* Reduce body height in landscape mode */
+  }
+}
+
 .App {
   display: flex;
   align-items: center;
