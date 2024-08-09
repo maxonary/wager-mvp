@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import 'font-awesome/css/font-awesome.min.css'; // Import Font Awesome CSS
 import '../styles.css'; // Import the updated CSS file
@@ -13,6 +13,19 @@ function BetForm({ betAmount, onBetAmountChange }) {
   const [isCompleted, setIsCompleted] = useState(false);
   const [matchID, setMatchID] = useState(null);
   const [result, setResult] = useState(null);
+
+  // Retrieve saved match data from local storage on component mount
+  useEffect(() => {
+    const savedMatchData = localStorage.getItem('currentMatch');
+    if (savedMatchData) {
+      const { matchID, player1Tag, player2Tag, betAmount } = JSON.parse(savedMatchData);
+      setPlayer1Tag(player1Tag);
+      setPlayer2Tag(player2Tag);
+      setRangeValue(betAmount);
+      setMatchID(matchID);
+      setIsCompleted(true);
+    }
+  }, []);
 
   const handleSliderChange = (event) => {
     onBetAmountChange(parseInt(event.target.value, 10));
@@ -41,6 +54,15 @@ function BetForm({ betAmount, onBetAmountChange }) {
           setIsSubmitting(true);
           setIsCompleted(false);
 
+          // Save match data to local storage
+          const matchData = {
+            matchID: response.data.matchID,
+            player1Tag: player1Tag,
+            player2Tag: player2Tag,
+            betAmount: rangeValue,
+          };
+          localStorage.setItem('currentMatch', JSON.stringify(matchData));
+
           setTimeout(() => {
             setIsSubmitting(false);
             setIsCompleted(true);
@@ -56,17 +78,20 @@ function BetForm({ betAmount, onBetAmountChange }) {
   const handleFetchResult = () => {
     if (!matchID) return;
     setIsSubmitting(true);
-  
+
     // Prepare the request body
     const requestBody = {
       matchID: matchID,
     };
-  
+
     axios
       .post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/match/result`, requestBody) // Send matchID as body
       .then((response) => {
         setIsSubmitting(false);
         setResult(response.data);
+
+        // Clear match data from local storage after result is fetched
+        localStorage.removeItem('currentMatch');
       })
       .catch((error) => {
         setIsSubmitting(false);
@@ -77,6 +102,10 @@ function BetForm({ betAmount, onBetAmountChange }) {
 
   const closeModal = () => {
     setError('');
+  };
+
+  const handleRefresh = () => {
+    window.location.reload(); // Refresh the page
   };
 
   return (
@@ -136,6 +165,7 @@ function BetForm({ betAmount, onBetAmountChange }) {
         <div className="result">
           <p>Winner: {result.winnerUserName} (New Balance: {result.winnerNewBalance})</p>
           <p>Loser: {result.loserUserName} (New Balance: {result.loserNewBalance})</p>
+          <button onClick={handleRefresh}>Refresh Page</button>
         </div>
       )}
 

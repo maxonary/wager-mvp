@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles.css'; // Import the updated CSS file
 import axios from 'axios';
 
 function AnotherPage() {
   const [data, setData] = useState([]);
+  const navigate = useNavigate(); // Use useNavigate instead of useHistory
 
   function getData() {
     axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/leaderboard`)
@@ -22,6 +23,14 @@ function AnotherPage() {
   useEffect(() => {
     getData();
   }, []);
+
+  const handleStartNewBet = () => {
+    // Clear the token from local storage
+    localStorage.removeItem('currentMatch');
+
+    // Redirect to BetForm page
+    navigate('/'); // Use navigate instead of history.push
+  };
 
   return (
     <div className="leaderboard-container">
@@ -44,9 +53,9 @@ function AnotherPage() {
       </table>
       
       {/* Button to go back to BetForm */}
-      <Link to="/">
-        <button className="back-button">Start a new a bet</button>
-      </Link>
+      <button className="back-button" onClick={handleStartNewBet}>
+        Start a new bet
+      </button>
     </div>
   );
 }
