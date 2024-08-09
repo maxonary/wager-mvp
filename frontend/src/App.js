@@ -4,6 +4,7 @@ import BetForm from './components/BetForm';
 import Leaderboard from './components/Leaderboard';
 import AnotherPage from './components/AnotherPage'; // Import your new page component
 import './App.css';
+import './styles.css';
 
 function App() {
   const [betAmount, setBetAmount] = useState(50);
