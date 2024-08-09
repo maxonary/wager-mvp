@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import '../styles.css'; // Import the updated CSS file
+import '../styles.css';
 import axios from 'axios';
+import { copyToClipboard } from '../utils/clipboardUtils';
 
 function AnotherPage() {
   const [data, setData] = useState([]);
@@ -23,6 +24,8 @@ function AnotherPage() {
   }, []);
 
   const openClashRoyaleApp = (userTag) => {
+    copyToClipboard(userTag);
+
     if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
       window.location.replace(`clashroyale://?addFriend=${userTag}`);
       setTimeout(() => {
