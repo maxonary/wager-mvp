@@ -26,7 +26,7 @@ function BetForm({ betAmount, onBetAmountChange }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (player1Tag.length !== 10 || player2Tag.length !== 10) {
+    if ((player1Tag.length !== 10 && player1Tag.length !== 9) || (player2Tag.length !== 10 && player2Tag.length !== 9)) {
       setError('Your gamertag is 9 characters long');
     } else {
       const body = {
