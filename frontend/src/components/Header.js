@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function Header({ user, onLogout }) {
   const navigate = useNavigate();
@@ -11,13 +11,6 @@ function Header({ user, onLogout }) {
 
   return (
     <header className="app-header">
-      <nav>
-        <ul>
-          <li><Link to="/betform">Bet</Link></li>
-          <li><Link to="/leaderboard">Leaderboard</Link></li>
-          <li><Link to="/wallet">Wallet</Link></li>
-        </ul>
-      </nav>
       {user && (
         <div className="user-info">
           <span>{user.username}</span>

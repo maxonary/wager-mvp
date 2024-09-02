@@ -8,7 +8,7 @@ class Match(BaseModel):
     userTag1: str
     userTag2: str
     winnerUserID: Optional[str] = None
-    betAmount: int
+    betAmount: float
     checked: bool = False
     createdTime: datetime = datetime.now(timezone.utc)  # Use timezone-aware UTC datetime
     checkedTime: Optional[datetime] = None  # Set when the match is checked
