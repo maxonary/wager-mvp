@@ -4,7 +4,7 @@ import "../styles.css";
 import axios from "axios";
 import { copyToClipboard } from "../utils/clipboardUtils";
 
-function AnotherPage() {
+function LeaderBoard() {
   const [data, setData] = useState([]);
 
   function getData() {
@@ -60,4 +60,4 @@ function AnotherPage() {
   );
 }
 
-export default AnotherPage;
+export default LeaderBoard;
