@@ -7,7 +7,7 @@ router = APIRouter()
 # Request model for increasing balance
 class IncreaseBalanceRequest(BaseModel):
     userTag: str
-    increaseAmount: int
+    increaseAmount: float
 
 @router.post("/user/increase-balance")
 async def increase_balance(request: IncreaseBalanceRequest):
