@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import BetForm from "./components/BetForm";
 import Wallet from "./components/Wallet";
-import Leaderboard from "./components/LeaderBoard";
+import Leaderboard from "./components/Leaderboard";
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import Header from "./components/Header";
@@ -72,25 +72,15 @@ function App() {
             <Route
               path="/betform"
               element={
-                isAuthenticated ? (
-                  <BetForm
-                    betAmount={betAmount}
-                    onBetAmountChange={handleBetAmountChange}
-                  />
-                ) : (
-                  <Navigate replace to="/signin" />
-                )
+                <BetForm
+                  betAmount={betAmount}
+                  onBetAmountChange={handleBetAmountChange}
+                />
               }
             />
             <Route
               path="/leaderboard"
-              element={
-                isAuthenticated ? (
-                  <Leaderboard />
-                ) : (
-                  <Navigate replace to="/signin" />
-                )
-              }
+              element={<Leaderboard />}
             />
             <Route
               path="/wallet"
