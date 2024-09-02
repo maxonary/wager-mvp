@@ -23,7 +23,12 @@ function SignIn({ onAuthenticate, redirectTo }) {
       );
       if (response.data.access_token) {
         localStorage.setItem("token", response.data.access_token);
-        onAuthenticate(true);
+        onAuthenticate(true, {
+          username: response.data.username,
+          email: email,
+          userID: response.data.userID,
+          userTag: response.data.userTag,
+        });
         navigate(redirectTo || "/betform");
       } else {
         setError("Sign in failed. Please try again.");

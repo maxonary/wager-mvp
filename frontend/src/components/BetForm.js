@@ -148,8 +148,8 @@ function BetForm({ betAmount, onBetAmountChange }) {
         </div>
       )}
 
-      {/* Link to Another Page */}
-      <Link to="/anotherpage">
+      {/* Link to leaderboard Page */}
+      <Link to="/leaderboard">
         <button type="button">Leaderboard</button>
       </Link>
     </form>
