@@ -1,4 +1,3 @@
-# app/db.py
 from pymongo import MongoClient
 from app.config import load_env
 
@@ -7,8 +6,10 @@ MONGO_URI = config['MONGO_URI']
 
 client = MongoClient(MONGO_URI)
 db = client['wagerDev']
+
 user_collection = db['userTable']
 match_collection = db['matchTable']
+transaction_collection = db['transactionTable']
 
 def get_db_client():
     return client
