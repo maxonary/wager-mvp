@@ -38,7 +38,12 @@ function App() {
             />
             <Route
               path="/signin"
-              element={<SignIn onAuthenticate={handleAuthentication} />}
+              element={
+                <SignIn
+                  onAuthenticate={handleAuthentication}
+                  redirectTo="/betform"
+                />
+              }
             />
             <Route
               path="/betform"

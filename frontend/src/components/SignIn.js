@@ -1,34 +1,48 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
-function SignIn() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+function SignIn({ onAuthenticate, redirectTo }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setError('');
-
+    setError("");
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/signin`, {
-        email,
-        password
-      });
-
-      if (response.data.success) {
-        // Assuming the backend returns a token on successful signin
-        localStorage.setItem('token', response.data.token);
-        navigate('/betform');
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/signin`,
+        {
+          email,
+          password,
+        }
+      );
+      if (response.data.access_token) {
+        localStorage.setItem("token", response.data.access_token);
+        onAuthenticate(true);
+        navigate(redirectTo || "/betform");
       } else {
-        setError(response.data.message || 'Sign in failed. Please try again.');
+        setError("Sign in failed. Please try again.");
       }
     } catch (error) {
-      setError(error.response?.data?.message || 'An error occurred. Please try again.');
+      if (error.response) {
+        const errorData = error.response.data;
+        if (typeof errorData === "string") {
+          setError(errorData);
+        } else if (typeof errorData === "object") {
+          setError(errorData.detail || JSON.stringify(errorData));
+        } else {
+          setError("An unexpected error occurred. Please try again.");
+        }
+      } else if (error.request) {
+        setError("No response received from server. Please try again.");
+      } else {
+        setError("An error occurred. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -60,7 +74,7 @@ function SignIn() {
         </div>
         {error && <p className="error-message">{error}</p>}
         <button type="submit" disabled={isLoading}>
-          {isLoading ? 'Signing In...' : 'Sign In'}
+          {isLoading ? "Signing In..." : "Sign In"}
         </button>
       </form>
       <p>
