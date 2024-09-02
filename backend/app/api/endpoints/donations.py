@@ -1,19 +1,27 @@
 from fastapi import APIRouter, HTTPException
-from typing import List
+from typing import List, Dict
 from app.models.transactionModel import Transaction
 from app.services.donation_service import fetch_and_process_donations 
 from app.db import transaction_collection
 
 router = APIRouter()
 
-@router.post("/update_donations", response_model=dict)
+@router.post("/update_donations", response_model=List[Dict[str, str]])
 async def update_donations():
     try:
         new_transactions = await fetch_and_process_donations()
-        return {"status": "success", "new_transactions": len(new_transactions)}
+        response_data = []
+        for transaction in new_transactions:
+            donor_info = {
+                "username": transaction.username, 
+                "GameTag": transaction.username
+            }
+            response_data.append(donor_info)
+
+        return response_data
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
 
 @router.get("/transactions", response_model=List[Transaction])
 async def fetch_all_transactions():
