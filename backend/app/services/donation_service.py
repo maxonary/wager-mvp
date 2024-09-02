@@ -6,13 +6,22 @@ from datetime import datetime
 from app.models.transactionModel import Transaction
 from typing import List
 from dotenv import load_dotenv
-from app.db import user_collection 
+import re
+from app.db import user_collection, transaction_collection
 
 load_dotenv()
 
 POOL_URL = os.getenv("PAYPAL_POOL_URL")
 
-async def fetch_paypal_transactions() -> List[Transaction]:
+def extract_game_tag(note: str) -> str:
+    """
+    Extracts the GameTag from a given note.
+    A GameTag starts with # and is between 7 and 10 characters long.
+    """
+    match = re.search(r'#\w{6,9}', note)
+    return match.group(0) if match else "No GameTag Found"
+
+async def fetch_paypal_transactions() -> List[dict]:
     async with httpx.AsyncClient() as client:
         res = await client.get(POOL_URL)
 
@@ -24,17 +33,25 @@ async def fetch_paypal_transactions() -> List[Transaction]:
 
     processed_transactions = []
     for pt in transactions:
-        username = pt.get("note", "error").replace(r"[^a-zA-Z0-9-]", "").lower()
-        transaction = Transaction(
-            username=username,
-            time=pt["date"],
-            amount=float(pt["amount"])
-        )
-        processed_transactions.append(transaction)
+        # Extract GameTag from the donation note
+        note = pt.get("note", "")
+        game_tag = extract_game_tag(note)
+        username = pt.get("name", "Unknown Donor")
+        time = pt.get("date")
+        amount = float(pt.get("amount", 0))
 
-    processed_transactions.sort(key=lambda x: datetime.fromisoformat(x.time), reverse=True)
+        # Ensure all required fields are included in the dictionary
+        processed_transactions.append({
+            'username': username,
+            'GameTag': game_tag,
+            'time': time,
+            'amount': amount
+        })
+
+    # Sort and filter new transactions based on time
+    processed_transactions.sort(key=lambda x: datetime.fromisoformat(x['time']), reverse=True)
     last_time = get_time_of_last_paypal_transaction()
-    new_transactions = [t for t in processed_transactions if datetime.fromisoformat(t.time) > last_time]
+    new_transactions = [t for t in processed_transactions if datetime.fromisoformat(t['time']) > last_time]
 
     return new_transactions
 
@@ -57,7 +74,12 @@ def update_user_balance(username: str, amount: float):
     user_collection.update_one({"userTag": username}, {"$set": {"balance": new_balance}})
 
 async def fetch_and_process_donations():
-    new_transactions = await fetch_paypal_transactions()
+    new_transactions_dicts = await fetch_paypal_transactions()
+
+    # Convert each dictionary to an instance of the Transaction model
+    new_transactions = [
+        Transaction(**transaction_dict) for transaction_dict in new_transactions_dicts
+    ]
 
     for transaction in new_transactions:
         update_user_balance(transaction.username, transaction.amount)
