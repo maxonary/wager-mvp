@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.endpoints import getData
 from app.api.endpoints import auth
 from app.api.endpoints import createMatch
+from app.api.endpoints import donations
 from app.api.endpoints import getMatchResult
 from app.api.endpoints import getLeaderBoard
 from app.api.endpoints import increaseBalance
@@ -26,6 +27,7 @@ app.add_middleware(
 app.include_router(getIP.router, prefix="/api/v1")
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(createMatch.router, prefix="/api/v1")
+app.include_router(donations.router, prefix="/api/v1")
 app.include_router(getMatchResult.router, prefix="/api/v1")
 app.include_router(getLeaderBoard.router, prefix="/api/v1")
 app.include_router(increaseBalance.router, prefix="/api/v1")
